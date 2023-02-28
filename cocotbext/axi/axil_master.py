@@ -90,10 +90,10 @@ class AxiLiteMasterWrite(Region, Reset):
         self.reset = reset
         self.log = logging.getLogger(f"cocotb.{bus.aw._entity._name}.{bus.aw._name}")
 
-        self.log.info("AXI lite master (write)")
-        self.log.info("cocotbext-axi version %s", __version__)
-        self.log.info("Copyright (c) 2020 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-axi")
+        self.log.debug("AXI lite master (write)")
+        self.log.debug("cocotbext-axi version %s", __version__)
+        self.log.debug("Copyright (c) 2020 Alex Forencich")
+        self.log.debug("https://github.com/alexforencich/cocotbext-axi")
 
         self.aw_channel = AxiLiteAWSource(bus.aw, clock, reset, reset_active_level)
         self.aw_channel.queue_occupancy_limit = 2
@@ -124,18 +124,18 @@ class AxiLiteMasterWrite(Region, Reset):
 
         super().__init__(2**self.address_width, **kwargs)
 
-        self.log.info("AXI lite master configuration:")
-        self.log.info("  Address width: %d bits", self.address_width)
-        self.log.info("  Byte size: %d bits", self.byte_size)
-        self.log.info("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
+        self.log.debug("AXI lite master configuration:")
+        self.log.debug("  Address width: %d bits", self.address_width)
+        self.log.debug("  Byte size: %d bits", self.byte_size)
+        self.log.debug("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
 
-        self.log.info("AXI lite master signals:")
+        self.log.debug("AXI lite master signals:")
         for bus in (self.bus.aw, self.bus.w, self.bus.b):
             for sig in sorted(list(set().union(bus._signals, bus._optional_signals))):
                 if hasattr(bus, sig):
-                    self.log.info("  %s width: %d bits", sig, len(getattr(bus, sig)))
+                    self.log.debug("  %s width: %d bits", sig, len(getattr(bus, sig)))
                 else:
-                    self.log.info("  %s: not present", sig)
+                    self.log.debug("  %s: not present", sig)
 
         if self.wstrb_present:
             assert self.byte_lanes == len(self.w_channel.bus.wstrb)
@@ -203,7 +203,7 @@ class AxiLiteMasterWrite(Region, Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._process_write_cr is not None:
                 self._process_write_cr.kill()
                 self._process_write_cr = None
@@ -241,7 +241,7 @@ class AxiLiteMasterWrite(Region, Reset):
             self.in_flight_operations = 0
             self._idle.set()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._process_write_cr is None:
                 self._process_write_cr = cocotb.start_soon(self._process_write())
             if self._process_write_resp_cr is None:
@@ -268,7 +268,7 @@ class AxiLiteMasterWrite(Region, Reset):
             offset = 0
 
             if self.log.isEnabledFor(logging.INFO):
-                self.log.info("Write start addr: 0x%08x prot: %s data: %s",
+                self.log.debug("Write start addr: 0x%08x prot: %s data: %s",
                         cmd.address, cmd.prot, ' '.join((f'{c:02x}' for c in cmd.data)))
 
             for k in range(cycles):
@@ -322,7 +322,7 @@ class AxiLiteMasterWrite(Region, Reset):
                 if cycle_resp != AxiResp.OKAY:
                     resp = cycle_resp
 
-            self.log.info("Write complete addr: 0x%08x prot: %s resp: %s length: %d",
+            self.log.debug("Write complete addr: 0x%08x prot: %s resp: %s length: %d",
                     cmd.address, cmd.prot, resp, cmd.length)
 
             write_resp = AxiLiteWriteResp(cmd.address, cmd.length, resp)
@@ -344,10 +344,10 @@ class AxiLiteMasterRead(Region, Reset):
         self.reset = reset
         self.log = logging.getLogger(f"cocotb.{bus.ar._entity._name}.{bus.ar._name}")
 
-        self.log.info("AXI lite master (read)")
-        self.log.info("cocotbext-axi version %s", __version__)
-        self.log.info("Copyright (c) 2020 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-axi")
+        self.log.debug("AXI lite master (read)")
+        self.log.debug("cocotbext-axi version %s", __version__)
+        self.log.debug("Copyright (c) 2020 Alex Forencich")
+        self.log.debug("https://github.com/alexforencich/cocotbext-axi")
 
         self.ar_channel = AxiLiteARSource(bus.ar, clock, reset, reset_active_level)
         self.ar_channel.queue_occupancy_limit = 2
@@ -374,18 +374,18 @@ class AxiLiteMasterRead(Region, Reset):
 
         super().__init__(2**self.address_width, **kwargs)
 
-        self.log.info("AXI lite master configuration:")
-        self.log.info("  Address width: %d bits", self.address_width)
-        self.log.info("  Byte size: %d bits", self.byte_size)
-        self.log.info("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
+        self.log.debug("AXI lite master configuration:")
+        self.log.debug("  Address width: %d bits", self.address_width)
+        self.log.debug("  Byte size: %d bits", self.byte_size)
+        self.log.debug("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
 
-        self.log.info("AXI lite master signals:")
+        self.log.debug("AXI lite master signals:")
         for bus in (self.bus.ar, self.bus.r):
             for sig in sorted(list(set().union(bus._signals, bus._optional_signals))):
                 if hasattr(bus, sig):
-                    self.log.info("  %s width: %d bits", sig, len(getattr(bus, sig)))
+                    self.log.debug("  %s width: %d bits", sig, len(getattr(bus, sig)))
                 else:
-                    self.log.info("  %s: not present", sig)
+                    self.log.debug("  %s: not present", sig)
 
         assert self.byte_lanes * self.byte_size == self.width
 
@@ -446,7 +446,7 @@ class AxiLiteMasterRead(Region, Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._process_read_cr is not None:
                 self._process_read_cr.kill()
                 self._process_read_cr = None
@@ -483,7 +483,7 @@ class AxiLiteMasterRead(Region, Reset):
             self.in_flight_operations = 0
             self._idle.set()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._process_read_cr is None:
                 self._process_read_cr = cocotb.start_soon(self._process_read())
             if self._process_read_resp_cr is None:
@@ -501,7 +501,7 @@ class AxiLiteMasterRead(Region, Reset):
             resp_cmd = AxiLiteReadRespCmd(cmd.address, cmd.length, cycles, cmd.prot, cmd.event)
             await self.int_read_resp_command_queue.put(resp_cmd)
 
-            self.log.info("Read start addr: 0x%08x prot: %s length: %d",
+            self.log.debug("Read start addr: 0x%08x prot: %s length: %d",
                     cmd.address, cmd.prot, cmd.length)
 
             for k in range(cycles):
@@ -549,7 +549,7 @@ class AxiLiteMasterRead(Region, Reset):
                     data.extend(bytearray([(cycle_data >> j*8) & 0xff]))
 
             if self.log.isEnabledFor(logging.INFO):
-                self.log.info("Read complete addr: 0x%08x prot: %s resp: %s data: %s",
+                self.log.debug("Read complete addr: 0x%08x prot: %s resp: %s data: %s",
                         cmd.address, cmd.prot, resp, ' '.join((f'{c:02x}' for c in data)))
 
             read_resp = AxiLiteReadResp(cmd.address, bytes(data), resp)

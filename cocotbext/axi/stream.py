@@ -142,7 +142,7 @@ class StreamBase(Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._run_cr is not None:
                 self._run_cr.kill()
                 self._run_cr = None
@@ -152,7 +152,7 @@ class StreamBase(Reset):
             if self.queue.empty():
                 self.idle_event.set()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._run_cr is None:
                 self._run_cr = cocotb.start_soon(self._run())
 

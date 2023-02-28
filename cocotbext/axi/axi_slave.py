@@ -40,10 +40,10 @@ class AxiSlaveWrite(Reset):
         self.target = target
         self.log = logging.getLogger(f"cocotb.{bus.aw._entity._name}.{bus.aw._name}")
 
-        self.log.info("AXI slave model (write)")
-        self.log.info("cocotbext-axi version %s", __version__)
-        self.log.info("Copyright (c) 2021 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-axi")
+        self.log.debug("AXI slave model (write)")
+        self.log.debug("cocotbext-axi version %s", __version__)
+        self.log.debug("Copyright (c) 2021 Alex Forencich")
+        self.log.debug("https://github.com/alexforencich/cocotbext-axi")
 
         super().__init__(**kwargs)
 
@@ -65,19 +65,19 @@ class AxiSlaveWrite(Reset):
 
         self.wstrb_present = hasattr(self.bus.w, "wstrb")
 
-        self.log.info("AXI slave model configuration:")
-        self.log.info("  Address width: %d bits", self.address_width)
-        self.log.info("  ID width: %d bits", self.id_width)
-        self.log.info("  Byte size: %d bits", self.byte_size)
-        self.log.info("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
+        self.log.debug("AXI slave model configuration:")
+        self.log.debug("  Address width: %d bits", self.address_width)
+        self.log.debug("  ID width: %d bits", self.id_width)
+        self.log.debug("  Byte size: %d bits", self.byte_size)
+        self.log.debug("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
 
-        self.log.info("AXI slave model signals:")
+        self.log.debug("AXI slave model signals:")
         for bus in (self.bus.aw, self.bus.w, self.bus.b):
             for sig in sorted(list(set().union(bus._signals, bus._optional_signals))):
                 if hasattr(bus, sig):
-                    self.log.info("  %s width: %d bits", sig, len(getattr(bus, sig)))
+                    self.log.debug("  %s width: %d bits", sig, len(getattr(bus, sig)))
                 else:
-                    self.log.info("  %s: not present", sig)
+                    self.log.debug("  %s: not present", sig)
 
         if self.wstrb_present:
             assert self.byte_lanes == len(self.w_channel.bus.wstrb)
@@ -94,7 +94,7 @@ class AxiSlaveWrite(Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._process_write_cr is not None:
                 self._process_write_cr.kill()
                 self._process_write_cr = None
@@ -103,7 +103,7 @@ class AxiSlaveWrite(Reset):
             self.w_channel.clear()
             self.b_channel.clear()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._process_write_cr is None:
                 self._process_write_cr = cocotb.start_soon(self._process_write())
 
@@ -118,7 +118,7 @@ class AxiSlaveWrite(Reset):
             burst = AxiBurstType(int(getattr(aw, 'awburst', AxiBurstType.INCR)))
             prot = AxiProt(int(getattr(aw, 'awprot', AxiProt.NONSECURE)))
 
-            self.log.info("Write burst awid: 0x%x awaddr: 0x%08x awlen: %d awsize: %d awprot: %s",
+            self.log.debug("Write burst awid: 0x%x awaddr: 0x%08x awlen: %d awsize: %d awprot: %s",
                     awid, addr, length, size, prot)
 
             num_bytes = 2**size
@@ -208,10 +208,10 @@ class AxiSlaveRead(Reset):
         self.target = target
         self.log = logging.getLogger(f"cocotb.{bus.ar._entity._name}.{bus.ar._name}")
 
-        self.log.info("AXI slave model (read)")
-        self.log.info("cocotbext-axi version %s", __version__)
-        self.log.info("Copyright (c) 2021 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-axi")
+        self.log.debug("AXI slave model (read)")
+        self.log.debug("cocotbext-axi version %s", __version__)
+        self.log.debug("Copyright (c) 2021 Alex Forencich")
+        self.log.debug("https://github.com/alexforencich/cocotbext-axi")
 
         super().__init__(**kwargs)
 
@@ -228,19 +228,19 @@ class AxiSlaveRead(Reset):
 
         self.max_burst_size = (self.byte_lanes-1).bit_length()
 
-        self.log.info("AXI slave model configuration:")
-        self.log.info("  Address width: %d bits", self.address_width)
-        self.log.info("  ID width: %d bits", self.id_width)
-        self.log.info("  Byte size: %d bits", self.byte_size)
-        self.log.info("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
+        self.log.debug("AXI slave model configuration:")
+        self.log.debug("  Address width: %d bits", self.address_width)
+        self.log.debug("  ID width: %d bits", self.id_width)
+        self.log.debug("  Byte size: %d bits", self.byte_size)
+        self.log.debug("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
 
-        self.log.info("AXI slave model signals:")
+        self.log.debug("AXI slave model signals:")
         for bus in (self.bus.ar, self.bus.r):
             for sig in sorted(list(set().union(bus._signals, bus._optional_signals))):
                 if hasattr(bus, sig):
-                    self.log.info("  %s width: %d bits", sig, len(getattr(bus, sig)))
+                    self.log.debug("  %s width: %d bits", sig, len(getattr(bus, sig)))
                 else:
-                    self.log.info("  %s: not present", sig)
+                    self.log.debug("  %s: not present", sig)
 
         assert self.byte_lanes * self.byte_size == self.width
 
@@ -255,7 +255,7 @@ class AxiSlaveRead(Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._process_read_cr is not None:
                 self._process_read_cr.kill()
                 self._process_read_cr = None
@@ -263,7 +263,7 @@ class AxiSlaveRead(Reset):
             self.ar_channel.clear()
             self.r_channel.clear()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._process_read_cr is None:
                 self._process_read_cr = cocotb.start_soon(self._process_read())
 
@@ -278,7 +278,7 @@ class AxiSlaveRead(Reset):
             burst = AxiBurstType(int(getattr(ar, 'arburst', AxiBurstType.INCR)))
             prot = AxiProt(int(getattr(ar, 'arprot', AxiProt.NONSECURE)))
 
-            self.log.info("Read burst arid: 0x%x araddr: 0x%08x arlen: %d arsize: %d arprot: %s",
+            self.log.debug("Read burst arid: 0x%x araddr: 0x%08x arlen: %d arsize: %d arprot: %s",
                     arid, addr, length, size, prot)
 
             num_bytes = 2**size

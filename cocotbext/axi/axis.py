@@ -268,10 +268,10 @@ class AxiStreamBase(Reset):
         self.reset = reset
         self.log = logging.getLogger(f"cocotb.{bus._entity._name}.{bus._name}")
 
-        self.log.info("AXI stream %s", self._type)
-        self.log.info("cocotbext-axi version %s", __version__)
-        self.log.info("Copyright (c) 2020 Alex Forencich")
-        self.log.info("https://github.com/alexforencich/cocotbext-axi")
+        self.log.debug("AXI stream %s", self._type)
+        self.log.debug("cocotbext-axi version %s", __version__)
+        self.log.debug("Copyright (c) 2020 Alex Forencich")
+        self.log.debug("https://github.com/alexforencich/cocotbext-axi")
 
         super().__init__(*args, **kwargs)
 
@@ -317,16 +317,16 @@ class AxiStreamBase(Reset):
         self.byte_size = self.width // self.byte_lanes
         self.byte_mask = 2**self.byte_size-1
 
-        self.log.info("AXI stream %s configuration:", self._type)
-        self.log.info("  Byte size: %d bits", self.byte_size)
-        self.log.info("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
+        self.log.debug("AXI stream %s configuration:", self._type)
+        self.log.debug("  Byte size: %d bits", self.byte_size)
+        self.log.debug("  Data width: %d bits (%d bytes)", self.width, self.byte_lanes)
 
-        self.log.info("AXI stream %s signals:", self._type)
+        self.log.debug("AXI stream %s signals:", self._type)
         for sig in sorted(list(set().union(self.bus._signals, self.bus._optional_signals))):
             if hasattr(self.bus, sig):
-                self.log.info("  %s width: %d bits", sig, len(getattr(self.bus, sig)))
+                self.log.debug("  %s width: %d bits", sig, len(getattr(self.bus, sig)))
             else:
-                self.log.info("  %s: not present", sig)
+                self.log.debug("  %s: not present", sig)
 
         if self.byte_lanes * self.byte_size != self.width:
             raise ValueError(f"Bus does not evenly divide into byte lanes "
@@ -355,7 +355,7 @@ class AxiStreamBase(Reset):
 
     def _handle_reset(self, state):
         if state:
-            self.log.info("Reset asserted")
+            self.log.debug("Reset asserted")
             if self._run_cr is not None:
                 self._run_cr.kill()
                 self._run_cr = None
@@ -365,7 +365,7 @@ class AxiStreamBase(Reset):
             if self.queue.empty():
                 self.idle_event.set()
         else:
-            self.log.info("Reset de-asserted")
+            self.log.debug("Reset de-asserted")
             if self._run_cr is None:
                 self._run_cr = cocotb.start_soon(self._run())
 
@@ -527,7 +527,7 @@ class AxiStreamSource(AxiStreamBase, AxiStreamPause):
                     self.current_frame = frame
                     frame.sim_time_start = get_sim_time()
                     frame.sim_time_end = None
-                    self.log.info("TX frame: %s", frame)
+                    self.log.debug("TX frame: %s", frame)
                     frame.normalize()
                     self.active = True
                     frame_offset = 0
@@ -710,7 +710,7 @@ class AxiStreamMonitor(AxiStreamBase):
 
                 if not has_tlast or self.bus.tlast.value:
                     frame.sim_time_end = get_sim_time()
-                    self.log.info("RX frame: %s", frame)
+                    self.log.debug("RX frame: %s", frame)
 
                     self.queue_occupancy_bytes += len(frame)
                     self.queue_occupancy_frames += 1
@@ -811,7 +811,7 @@ class AxiStreamSink(AxiStreamMonitor, AxiStreamPause):
 
                 if not has_tlast or self.bus.tlast.value:
                     frame.sim_time_end = get_sim_time()
-                    self.log.info("RX frame: %s", frame)
+                    self.log.debug("RX frame: %s", frame)
 
                     self.queue_occupancy_bytes += len(frame)
                     self.queue_occupancy_frames += 1
